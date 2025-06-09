@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>ZMS - Add New Medical Treatment</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+</head>
+<body>
+
+<header>
+  <h1>Zoo Management System (ZMS)™</h1>
+  <nav>
+    <a th:href="@{/medical/by-animal}">View by Animal</a>
+    <a th:href="@{/medical/by-veterinarian}">View by Veterinarian</a>
+  </nav>
+</header>
+
+<main>
+  <div class="form-container">
+    <div class="panel-header">
+      <h2 th:if="${animal != null}" th:text="'Add New Treatment for ' + ${animal.givenName}">Add New Treatment</h2>
+      <h2 th:unless="${animal != null}">Add New Treatment</h2>
+    </div>
+
+    <form action="#" th:action="@{/medical/treatments/new}" th:object="${treatment}" method="post" class="detail-panel">
+
+      <!-- Animal Selection -->
+      <div class="form-group">
+        <label for="animalId">Patient (Animal)</label>
+        <select id="animalId" th:field="*{animalId}" required>
+          <option value="">-- Select an Animal --</option>
+          <option th:each="animalOpt : ${allAnimals}"
+                  th:value="${animalOpt.id}"
+                  th:text="${animalOpt.givenName} + ' (' + ${animalOpt.animalID} + ')'">
+            Leo (ZOO-LION-001)
+          </option>
+        </select>
+      </div>
+
+      <!-- Veterinarian Selection -->
+      <div class="form-group">
+        <label for="veterinarianId">Performing Veterinarian</label>
+        <select id="veterinarianId" th:field="*{veterinarianId}" required>
+          <option value="">-- Select a Veterinarian --</option>
+          <option th:each="vet : ${allVeterinarians}"
+                  th:value="${vet.id}"
+                  th:text="${vet.firstName} + ' ' + ${vet.lastName} + ' (' + ${vet.specialization} + ')'">
+            Dr. Anna Kowalska (Large Mammals)
+          </option>
+        </select>
+      </div>
+
+      <!-- Treatment Type Selection -->
+      <div class="form-group">
+        <label for="type">Treatment Type</label>
+        <select id="type" th:field="*{type}" required>
+          <option value="">-- Select Type --</option>
+          <option th:each="typeOpt : ${T(org.mas.zoomanagementsystem.model.enums.MedicalTreatmentType).values()}"
+                  th:value="${typeOpt}"
+                  th:text="${typeOpt}">
+            CHECKUP
+          </option>
+        </select>
+      </div>
+
+      <!-- Diagnosis Input -->
+      <div class="form-group">
+        <label for="diagnosis">Diagnosis</label>
+        <input type="text" id="diagnosis" th:field="*{diagnosis}" placeholder="e.g., Routine Checkup, Minor infection" required>
+      </div>
+
+      <!-- Procedure Description Input -->
+      <div class="form-group">
+        <label for="procedureDescription">Procedure Description</label>
+        <textarea id="procedureDescription" th:field="*{procedureDescription}" placeholder="Describe the procedure performed."></textarea>
+      </div>
+
+      <!-- Notes Input -->
+      <div class="form-group">
+        <label for="notes">Notes</label>
+        <textarea id="notes" th:field="*{notes}" placeholder="Any additional notes or observations."></textarea>
+      </div>
+
+      <!-- Medication -->
+      <div class="form-group">
+        <label for="medication">Medication Administered (one per line)</label>
+        <textarea id="medication" name="medicationAdministered" placeholder="e.g.,&#10;Vitamin C&#10;Antibiotic X"></textarea>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <a th:href="@{/medical/by-animal}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">Save Treatment</button>
+      </div>
+
+    </form>
+  </div>
+</main>
+
+</body>
+</html>

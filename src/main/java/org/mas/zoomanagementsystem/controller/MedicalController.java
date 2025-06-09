@@ -2,6 +2,7 @@ package org.mas.zoomanagementsystem.controller;
 
 import org.mas.zoomanagementsystem.dto.CreateMedicalTreatmentDto;
 import org.mas.zoomanagementsystem.dto.MedicalHistoryViewDto;
+import org.mas.zoomanagementsystem.dto.MedicalTreatmentDetailDto;
 import org.mas.zoomanagementsystem.dto.MedicalTreatmentSummaryDto;
 import org.mas.zoomanagementsystem.model.Animal;
 import org.mas.zoomanagementsystem.model.Employee;
@@ -51,6 +52,9 @@ public class MedicalController {
         var viewDto = MedicalHistoryViewDto.builder().animals(animals).build();
 
         if (animalId != null) {
+            var animalDetails = medicalHistoryService.getAnimalDetails(animalId);
+            model.addAttribute("selectedAnimalDetails", animalDetails);
+
             var treatments = medicalHistoryService.getTreatmentsForAnimal(animalId);
             viewDto.setTreatments(treatments);
             viewDto.setSelectedAnimalId(animalId);
@@ -83,8 +87,11 @@ public class MedicalController {
         model.addAttribute("selectedVetId", vetId);
 
         if (vetId != null) {
-             List<MedicalTreatmentSummaryDto> treatments = medicalHistoryService.getTreatmentsByVeterinarian(vetId);
-             model.addAttribute("treatments", treatments);
+            var vetDetails = medicalHistoryService.getVeterinarianDetails(vetId);
+            model.addAttribute("selectedVetDetails", vetDetails);
+
+            List<MedicalTreatmentSummaryDto> treatments = medicalHistoryService.getTreatmentsByVeterinarian(vetId);
+            model.addAttribute("treatments", treatments);
 
             if (treatmentId != null) {
                 var treatmentDetail = medicalHistoryService.getTreatmentDetails(treatmentId);
@@ -106,12 +113,18 @@ public class MedicalController {
      */
     @GetMapping("/treatments/new")
     public String showAddTreatmentForm(@RequestParam(name = "animalId", required = false) Long animalId, Model model) {
+        // Fetch lists needed for dropdowns
         List<Employee> veterinarians = employeeRepository.findByRolesContaining(EmployeeRole.VETERINARIAN);
         List<Animal> animals = animalRepository.findAll();
 
+        // Prepare an empty DTO for the form to bind to
         CreateMedicalTreatmentDto treatmentDto = new CreateMedicalTreatmentDto();
+
         if (animalId != null) {
-            treatmentDto.setAnimalId(animalId); // Pre-populate if coming from animal's page
+            animalRepository.findById(animalId).ifPresent(animal -> {
+                model.addAttribute("animal", animal);
+                treatmentDto.setAnimalId(animalId);
+            });
         }
 
         model.addAttribute("treatment", treatmentDto);

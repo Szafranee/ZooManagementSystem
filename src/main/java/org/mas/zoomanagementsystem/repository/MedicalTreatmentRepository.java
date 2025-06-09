@@ -28,4 +28,11 @@ public interface MedicalTreatmentRepository extends JpaRepository<MedicalTreatme
      * @return A list of medical treatments performed by the specified veterinarian.
      */
     List<MedicalTreatment> findByPerformingEmployee(Employee veterinarian);
+
+    /**
+     * Finds all medical treatments performed by a specific veterinarian, ordered by date descending.
+     * @param vet The veterinarian whose treatments are to be retrieved.
+     * @return A list of medical treatments performed by the specified veterinarian, with the most recent first.
+     */
+    List<MedicalTreatment> findByPerformingEmployeeOrderByDateDesc(Employee vet);
 }

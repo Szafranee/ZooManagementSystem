@@ -1,9 +1,6 @@
 package org.mas.zoomanagementsystem.service;
 
-import org.mas.zoomanagementsystem.dto.AnimalListDto;
-import org.mas.zoomanagementsystem.dto.CreateMedicalTreatmentDto;
-import org.mas.zoomanagementsystem.dto.MedicalTreatmentDetailDto;
-import org.mas.zoomanagementsystem.dto.MedicalTreatmentSummaryDto;
+import org.mas.zoomanagementsystem.dto.*;
 
 import java.util.List;
 
@@ -54,4 +51,20 @@ public interface MedicalHistoryService {
      * @return A list of MedicalTreatmentSummaryDto objects for the specified veterinarian.
      */
     List<MedicalTreatmentSummaryDto> getTreatmentsByVeterinarian(Long vetId);
+
+    /**
+     * Retrieves detailed information about a specific animal.
+     *
+     * @param animalId The ID of the animal.
+     * @return An AnimalDetailDto object containing the animal's details and associated veterinarian.
+     */
+    AnimalDetailDto getAnimalDetails(Long animalId);
+
+    /**
+     * Retrieves detailed information about a specific veterinarian.
+     *
+     * @param vetId The ID of the veterinarian.
+     * @return A VeterinarianDetailDto object containing the veterinarian's details.
+     */
+    VeterinarianDetailDto getVeterinarianDetails(Long vetId);
 }

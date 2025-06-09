@@ -1,10 +1,7 @@
 package org.mas.zoomanagementsystem.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.mas.zoomanagementsystem.dto.AnimalListDto;
-import org.mas.zoomanagementsystem.dto.CreateMedicalTreatmentDto;
-import org.mas.zoomanagementsystem.dto.MedicalTreatmentDetailDto;
-import org.mas.zoomanagementsystem.dto.MedicalTreatmentSummaryDto;
+import org.mas.zoomanagementsystem.dto.*;
 import org.mas.zoomanagementsystem.model.Animal;
 import org.mas.zoomanagementsystem.model.Employee;
 import org.mas.zoomanagementsystem.model.MedicalTreatment;
@@ -108,6 +105,24 @@ public class MedicalHistoryServiceImpl implements MedicalHistoryService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public AnimalDetailDto getAnimalDetails(Long animalId) {
+        Animal animal = animalRepository.findById(animalId)
+                .orElseThrow(() -> new EntityNotFoundException("Animal not found with id: " + animalId));
+        return mapToAnimalDetailDto(animal);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public VeterinarianDetailDto getVeterinarianDetails(Long vetId) {
+        Employee vet = employeeRepository.findById(vetId)
+                .orElseThrow(() -> new EntityNotFoundException("Veterinarian not found with id: " + vetId));
+        // Pobieramy zabiegi, aby policzyć ich liczbę
+        List<MedicalTreatment> treatments = medicalTreatmentRepository.findByPerformingEmployeeOrderByDateDesc(vet);
+        return mapToVeterinarianDetailDto(vet, treatments.size());
+    }
+
 
     // --- Private Helper Methods for Mapping ---
 
@@ -133,15 +148,8 @@ public class MedicalHistoryServiceImpl implements MedicalHistoryService {
 
     private MedicalTreatmentDetailDto mapToMedicalTreatmentDetailDto(MedicalTreatment treatment) {
         Employee vet = treatment.getPerformingEmployee();
-        String vetFullName = "N/A";
-        String vetSpecialization = "N/A";
+        Animal patient = treatment.getAnimal();
 
-        if (vet != null) {
-            vetFullName = vet.getFirstName() + " " + vet.getLastName();
-            vetSpecialization = vet.getSpecialization() != null ? vet.getSpecialization() : "N/A";
-        }
-
-        // Using the builder for cleaner object creation
         return MedicalTreatmentDetailDto.builder()
                 .id(treatment.getId())
                 .date(treatment.getDate())
@@ -150,8 +158,36 @@ public class MedicalHistoryServiceImpl implements MedicalHistoryService {
                 .procedureDescription(treatment.getProcedureDescription())
                 .medicationAdministered(treatment.getMedicationAdministered())
                 .notes(treatment.getNotes())
-                .performingVetFullName(vetFullName)
-                .performingVetSpecialization(vetSpecialization)
+                .performingVetId(vet != null ? vet.getId() : null)
+                .performingVetFullName(vet != null ? vet.getFirstName() + " " + vet.getLastName() : "N/A")
+                .performingVetSpecialization(vet != null ? vet.getSpecialization() : "N/A")
+                .patientId(patient != null ? patient.getId() : null)
+                .patientName(patient != null ? patient.getGivenName() : "N/A")
+                .patientIdString(patient != null ? patient.getAnimalID() : "N/A")
+                .build();
+    }
+
+    private AnimalDetailDto mapToAnimalDetailDto(Animal animal) {
+        return AnimalDetailDto.builder()
+                .givenName(animal.getGivenName())
+                .animalID(animal.getAnimalID())
+                .speciesCommonName(animal.getSpecies().getCommonName())
+                .age(animal.getAge())
+                .gender(animal.getGender())
+                .dateOfBirth(animal.getDateOfBirth())
+                .origin(animal.getOrigin())
+                .healthStatus(animal.getHealthStatus())
+                .enclosureName(animal.getEnclosure() != null ? animal.getEnclosure().getName() : "Unassigned")
+                .build();
+    }
+
+    private VeterinarianDetailDto mapToVeterinarianDetailDto(Employee vet, int treatmentCount) {
+        return VeterinarianDetailDto.builder()
+                .fullName(vet.getFirstName() + " " + vet.getLastName())
+                .email(vet.getEmail())
+                .specialization(vet.getSpecialization())
+                .licenseNumber(vet.getLicenseNumber())
+                .numberOfTreatmentsPerformed(treatmentCount)
                 .build();
     }
 }

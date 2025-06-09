@@ -25,6 +25,10 @@ public class MedicalTreatmentDetailDto {
     private String procedureDescription;
     private List<String> medicationAdministered;
     private String notes;
+    private Long performingVetId;
     private String performingVetFullName; // Aggregated data
     private String performingVetSpecialization; // Aggregated data
+    private Long patientId;
+    private String patientIdString;
+    private String patientName;
 }

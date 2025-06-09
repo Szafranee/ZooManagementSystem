@@ -28,7 +28,8 @@ public class Employee {
     @ElementCollection(targetClass = EmployeeRole.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "employee_roles", joinColumns = @JoinColumn(name = "employee_id"))
     @Enumerated(EnumType.STRING)
-    private EnumSet<EmployeeRole> roles = EnumSet.noneOf(EmployeeRole.class);
+    @Column(name = "role")
+    private Set<EmployeeRole> roles = new HashSet<>();
 
     // --- Role Specific Fields ---
 

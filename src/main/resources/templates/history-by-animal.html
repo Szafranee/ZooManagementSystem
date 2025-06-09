@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ZMS - Animal Medical History</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+</head>
+<body>
+
+<header>
+    <h1>Zoo Management System (ZMS)™</h1>
+    <nav>
+        <a th:href="@{/medical/by-animal}" class="active">View by Animal</a>
+        <a th:href="@{/medical/by-veterinarian}">View by Veterinarian</a>
+    </nav>
+</header>
+
+<main>
+    <div class="panel-header" style="margin-bottom: 2rem; background-color: transparent; border: none; padding: 0;">
+        <h2 style="border: none; color: #3d405b;">Medical Records Overview (by Animal)</h2>
+        <a th:href="@{/medical/treatments/new}" class="btn btn-primary">Add New Treatment</a>
+    </div>
+
+    <div class="container-fluid">
+
+        <!-- PANEL 1: LIST OF ALL ANIMALS -->
+        <div class="panel">
+            <div class="panel-header">
+                <h2>Animals</h2>
+            </div>
+            <div class="panel-body">
+                <ul class="item-list" th:if="${!viewData.animals.isEmpty()}">
+                    <li th:each="animal : ${viewData.animals}">
+                        <a th:href="@{/medical/by-animal(animalId=${animal.id})}"
+                           th:classappend="${viewData.selectedAnimalId == animal.id} ? 'selected' : ''"
+                           th:text="${animal.givenName} + ' (' + ${animal.speciesCommonName} + ')'">
+                            Leo (Lion)
+                        </a>
+                    </li>
+                </ul>
+                <div class="detail-panel" th:if="${viewData.animals.isEmpty()}">
+                    <p>No animals found in the system.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL 2: ANIMAL DETAILS (New) -->
+        <div class="panel" th:if="${selectedAnimalDetails != null}">
+            <div class="panel-header">
+                <h2 th:text="${selectedAnimalDetails.givenName} + ' - Details'">Animal Details</h2>
+            </div>
+            <div class="panel-body detail-panel">
+                <p><strong>Animal ID:</strong> <span th:text="${selectedAnimalDetails.animalID}"></span></p>
+                <p><strong>Species:</strong> <span th:text="${selectedAnimalDetails.speciesCommonName}"></span></p>
+                <p><strong>Age:</strong> <span th:text="${selectedAnimalDetails.age} + ' years'"></span></p>
+                <p><strong>Gender:</strong> <span th:text="${selectedAnimalDetails.gender}"></span></p>
+                <p><strong>Health Status:</strong> <span th:text="${selectedAnimalDetails.healthStatus}"></span></p>
+                <p><strong>Enclosure:</strong> <span th:text="${selectedAnimalDetails.enclosureName}"></span></p>
+            </div>
+        </div>
+
+        <!-- PANEL 3: LIST OF MEDICAL TREATMENTS FOR THE SELECTED ANIMAL -->
+        <div class="panel" th:if="${viewData.selectedAnimalId != null}">
+            <div class="panel-header">
+                <h2>Medical History</h2>
+                <a th:href="@{/medical/treatments/new(animalId=${viewData.selectedAnimalId})}" class="btn btn-primary">Add Treatment for this Animal</a>
+            </div>
+            <div class="panel-body">
+                <ul class="item-list" th:if="${viewData.treatments != null and !viewData.treatments.isEmpty()}">
+                    <li th:each="treatment : ${viewData.treatments}">
+                        <a th:href="@{/medical/by-animal(animalId=${viewData.selectedAnimalId}, treatmentId=${treatment.id})}"
+                           th:classappend="${viewData.selectedTreatmentId == treatment.id} ? 'selected' : ''"
+                           th:text="${#temporals.format(treatment.date, 'yyyy-MM-dd')} + ' - ' + ${treatment.diagnosis}">
+                            2023-10-27 - Routine Checkup
+                        </a>
+                    </li>
+                </ul>
+                <div class="detail-panel" th:if="${viewData.treatments == null or viewData.treatments.isEmpty()}">
+                    <p>No medical treatments recorded for this animal.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL 4: DETAILS OF THE SELECTED TREATMENT -->
+        <div class="panel" th:if="${viewData.treatmentDetail != null}">
+            <div class="panel-header">
+                <h2>Treatment Details</h2>
+            </div>
+            <div class="panel-body detail-panel">
+                <p><strong>Date:</strong> <span th:text="${#temporals.format(viewData.treatmentDetail.date, 'yyyy-MM-dd HH:mm')}"></span></p>
+                <p><strong>Type:</strong> <span th:text="${viewData.treatmentDetail.type}"></span></p>
+                <p><strong>Diagnosis:</strong> <span th:text="${viewData.treatmentDetail.diagnosis}"></span></p>
+                <p><strong>Procedure:</strong> <span th:text="${viewData.treatmentDetail.procedureDescription}"></span></p>
+                <p><strong>Veterinarian:</strong>
+                    <a th:href="@{/medical/by-veterinarian(vetId=${viewData.treatmentDetail.performingVetId})}"
+                       th:text="${viewData.treatmentDetail.performingVetFullName}">
+                    </a>
+                </p>
+                <p><strong>Vet Specialization:</strong> <span th:text="${viewData.treatmentDetail.performingVetSpecialization}"></span></p>
+
+                <div th:if="${viewData.treatmentDetail.medicationAdministered != null and !viewData.treatmentDetail.medicationAdministered.isEmpty()}">
+                    <p><strong>Medication:</strong></p>
+                    <ul>
+                        <li th:each="med : ${viewData.treatmentDetail.medicationAdministered}" th:text="${med}"></li>
+                    </ul>
+                </div>
+
+                <div th:if="${viewData.treatmentDetail.notes != null and !viewData.treatmentDetail.notes.isEmpty()}">
+                    <p><strong>Notes:</strong></p>
+                    <p><span th:text="${viewData.treatmentDetail.notes}"></span></p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+</body>
+</html>

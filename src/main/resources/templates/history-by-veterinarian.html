@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ZMS - Veterinarian Medical History</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+</head>
+<body>
+
+<header>
+    <h1>Zoo Management System (ZMS)™</h1>
+    <nav>
+        <a th:href="@{/medical/by-animal}">View by Animal</a>
+        <a th:href="@{/medical/by-veterinarian}" class="active">View by Veterinarian</a>
+    </nav>
+</header>
+
+<main>
+    <div class="panel-header" style="margin-bottom: 2rem; background-color: transparent; border: none; padding: 0;">
+        <h2 style="border: none; color: #3d405b;">Medical Records Overview (by Veterinarian)</h2>
+        <a th:href="@{/medical/treatments/new}" class="btn btn-primary">Add New Treatment</a>
+    </div>
+
+    <div class="container-fluid">
+
+        <!-- PANEL 1: LIST OF ALL VETERINARIANS -->
+        <div class="panel">
+            <div class="panel-header">
+                <h2>Veterinarians</h2>
+            </div>
+            <div class="panel-body">
+                <ul class="item-list" th:if="${!veterinarians.isEmpty()}">
+                    <li th:each="vet : ${veterinarians}">
+                        <a th:href="@{/medical/by-veterinarian(vetId=${vet.id})}"
+                           th:classappend="${selectedVetId == vet.id} ? 'selected' : ''"
+                           th:text="${vet.firstName} + ' ' + ${vet.lastName}">
+                            Dr. Anna Kowalska
+                        </a>
+                    </li>
+                </ul>
+                <div class="detail-panel" th:if="${veterinarians.isEmpty()}">
+                    <p>No veterinarians found in the system.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL 2: VETERINARIAN DETAILS (New) -->
+        <div class="panel" th:if="${selectedVetDetails != null}">
+            <div class="panel-header">
+                <h2 th:text="${selectedVetDetails.fullName} + ' - Details'">Veterinarian Details</h2>
+            </div>
+            <div class="panel-body detail-panel">
+                <p><strong>Email:</strong> <span th:text="${selectedVetDetails.email}"></span></p>
+                <p><strong>Specialization:</strong> <span th:text="${selectedVetDetails.specialization}"></span></p>
+                <p><strong>License No.:</strong> <span th:text="${selectedVetDetails.licenseNumber}"></span></p>
+                <p><strong>Treatments Performed:</strong> <span th:text="${selectedVetDetails.numberOfTreatmentsPerformed}"></span></p>
+            </div>
+        </div>
+
+        <!-- PANEL 3: LIST OF MEDICAL TREATMENTS FOR THE SELECTED VETERINARIAN -->
+        <div class="panel" th:if="${selectedVetId != null}">
+            <div class="panel-header">
+                <h2>Performed Treatments</h2>
+            </div>
+            <div class="panel-body">
+                <ul class="item-list" th:if="${treatments != null and !treatments.isEmpty()}">
+                    <li th:each="treatment : ${treatments}">
+                        <a th:href="@{/medical/by-veterinarian(vetId=${selectedVetId}, treatmentId=${treatment.id})}"
+                           th:classappend="${selectedTreatmentId == treatment.id} ? 'selected' : ''"
+                           th:text="${#temporals.format(treatment.date, 'yyyy-MM-dd')} + ' - ' + ${treatment.diagnosis}">
+                            2023-10-27 - Routine Checkup
+                        </a>
+                    </li>
+                </ul>
+                <div class="detail-panel" th:if="${treatments == null or treatments.isEmpty()}">
+                    <p>No medical treatments recorded for this veterinarian.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL 4: DETAILS OF THE SELECTED TREATMENT -->
+        <div class="panel" th:if="${treatmentDetail != null}">
+            <div class="panel-header">
+                <h2>Treatment Details</h2>
+            </div>
+            <div class="panel-body detail-panel">
+                <p><strong>Date:</strong> <span th:text="${#temporals.format(treatmentDetail.date, 'yyyy-MM-dd HH:mm')}"></span></p>
+                <p><strong>Type:</strong> <span th:text="${treatmentDetail.type}"></span></p>
+                <p><strong>Diagnosis:</strong> <span th:text="${treatmentDetail.diagnosis}"></span></p>
+                <p><strong>Procedure:</strong> <span th:text="${treatmentDetail.procedureDescription}"></span></p>
+                <p><strong>Patient:</strong>
+                    <a th:href="@{/medical/by-animal(animalId=${treatmentDetail.patientId})}"
+                       th:text="${treatmentDetail.patientName} + ' (' + ${treatmentDetail.patientIdString} + ')'">
+                    </a>
+                </p>
+
+                <div th:if="${treatmentDetail.medicationAdministered != null and !treatmentDetail.medicationAdministered.isEmpty()}">
+                    <p><strong>Medication:</strong></p>
+                    <ul>
+                        <li th:each="med : ${treatmentDetail.medicationAdministered}" th:text="${med}"></li>
+                    </ul>
+                </div>
+
+                <div th:if="${treatmentDetail.notes != null and !treatmentDetail.notes.isEmpty()}">
+                    <p><strong>Notes:</strong></p>
+                    <p><span th:text="${treatmentDetail.notes}"></span></p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+</body>
+</html>
