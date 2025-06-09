@@ -1,6 +1,7 @@
 package org.mas.zoomanagementsystem.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.mas.zoomanagementsystem.model.enums.MedicalTreatmentType;
@@ -15,6 +16,7 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
 public class MedicalTreatmentDetailDto {
     private Long id;
     private LocalDateTime date;

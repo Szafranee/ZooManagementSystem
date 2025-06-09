@@ -1,10 +1,12 @@
 package org.mas.zoomanagementsystem.repository;
 
 import org.mas.zoomanagementsystem.model.Animal;
+import org.mas.zoomanagementsystem.model.Employee;
 import org.mas.zoomanagementsystem.model.MedicalTreatment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -19,4 +21,11 @@ public interface MedicalTreatmentRepository extends JpaRepository<MedicalTreatme
      * @return A list of medical treatments, with the most recent first.
      */
     List<MedicalTreatment> findByAnimalOrderByDateDesc(Animal animal);
+
+    /**
+     * Finds all medical treatments performed by a specific veterinarian.
+     * @param veterinarian The veterinarian whose treatments are to be retrieved.
+     * @return A list of medical treatments performed by the specified veterinarian.
+     */
+    List<MedicalTreatment> findByPerformingEmployee(Employee veterinarian);
 }

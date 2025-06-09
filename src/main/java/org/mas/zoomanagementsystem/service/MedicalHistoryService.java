@@ -1,6 +1,7 @@
 package org.mas.zoomanagementsystem.service;
 
 import org.mas.zoomanagementsystem.dto.AnimalListDto;
+import org.mas.zoomanagementsystem.dto.CreateMedicalTreatmentDto;
 import org.mas.zoomanagementsystem.dto.MedicalTreatmentDetailDto;
 import org.mas.zoomanagementsystem.dto.MedicalTreatmentSummaryDto;
 
@@ -33,4 +34,24 @@ public interface MedicalHistoryService {
      * @return A MedicalTreatmentDetailDto object.
      */
     MedicalTreatmentDetailDto getTreatmentDetails(Long treatmentId);
+
+    /**
+     * Creates and saves a new medical treatment record.
+     * This method handles the business logic of creating a new treatment,
+     * linking it to the correct animal and veterinarian, and persisting it.
+     *
+     * @param createDto DTO containing all necessary information for the new treatment.
+     * @return The created MedicalTreatment entity, mapped to a detail DTO.
+     */
+    MedicalTreatmentDetailDto createNewTreatment(CreateMedicalTreatmentDto createDto);
+
+
+    /**
+     * Retrieves a list of all medical treatments performed by a specific veterinarian.
+     * This method is used to view the treatments from the veterinarian's perspective.
+     *
+     * @param vetId The ID of the veterinarian.
+     * @return A list of MedicalTreatmentSummaryDto objects for the specified veterinarian.
+     */
+    List<MedicalTreatmentSummaryDto> getTreatmentsByVeterinarian(Long vetId);
 }

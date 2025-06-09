@@ -1,6 +1,7 @@
 package org.mas.zoomanagementsystem.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
 public class AnimalListDto {
     private Long id;
     private String animalID;
